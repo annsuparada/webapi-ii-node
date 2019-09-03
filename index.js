@@ -58,11 +58,30 @@ server.get('/api/posts/:id', (req, res) => {
     .catch(error => {
         res
         .status(500)
-        .json({ errorMessage: 'The user information could not be retrieved.' });
+        .json({ errorMessage: 'The post information could not be retrieved.' });
     })
 }) 
 // GET    /api/posts/:id/comments
-// DELETE /api/posts/:id   
+// DELETE /api/posts/:id 
+server.delete('/api/posts/:id', (req, res) => {
+    db.remove(req.params.id)
+    .then(item => {
+        if(item && item > 0) {
+            res
+            .status(200)
+            .json({message: 'the item was deleted.'})
+        } else {
+            res
+            .status(404)
+            .json({ message: 'The item with the specified ID does not exist.' })
+        }
+    })
+    .catch(error => {
+        res
+        .status(500)
+        .json({ errorMessage: 'The item could not be removed' })
+    })
+})  
 // PUT    /api/posts/:id
 
 const port = 8000;
