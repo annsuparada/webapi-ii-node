@@ -22,11 +22,28 @@ server.get('/api/posts', (req, res) => {
         res.status(200).json(item)
     })
     .catch(error => {
-        res.status(500).json({errorMessage: 'error'})
+        res.status(500).json({errorMessage: 'The posts information could not be retrieved'})
     })
 })
 
-// GET    /api/posts/:id 
+// GET    /api/posts/:id
+server.get('/api/posts/:id', (req, res) => {
+    db.findById(req.params.id)
+    .then(item => {
+        if(item) {
+            res.status(200).json(item)
+        } else {
+            res
+            .status(404)
+            .json({ message: 'The post with the specified ID does not exist.'})
+        }
+    })
+    .catch(error => {
+        res
+        .status(500)
+        .json({ errorMessage: 'The user information could not be retrieved.' });
+    })
+}) 
 // GET    /api/posts/:id/comments
 // DELETE /api/posts/:id   
 // PUT    /api/posts/:id
