@@ -32,6 +32,7 @@ server.post('/api/posts', (req, res) => {
 
 // POST   /api/posts/:id/comments
 
+
 // GET    /api/posts 
 server.get('/api/posts', (req, res) => {
     db.find()
@@ -62,6 +63,24 @@ server.get('/api/posts/:id', (req, res) => {
     })
 }) 
 // GET    /api/posts/:id/comments
+server.get('/api/posts/:id/comments', (req, res) => {
+    db.findPostComments(req.params.id)
+    .then(item => {
+        if(item) {
+            res.status(200).json(item)
+        } else {
+            res
+            .status(404)
+            .json({ message: 'The post comments with the specified ID does not exist.'})
+        }
+    })
+    .catch(error => {
+        res
+        .status(500)
+        .json({ errorMessage: 'The post comments information could not be retrieved.' });
+    })
+})
+
 // DELETE /api/posts/:id 
 server.delete('/api/posts/:id', (req, res) => {
     db.remove(req.params.id)
