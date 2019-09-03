@@ -8,7 +8,7 @@ server.get('/', (req, res) => {
     res.send('it is working')
 })
 
-// POST  /api/posts 
+// POST  /api/posts
 server.post('/api/posts', (req, res) => {
     const { title, contents } = req.body;
     if (!title || !contents) {
@@ -31,9 +31,30 @@ server.post('/api/posts', (req, res) => {
 })
 
 // POST   /api/posts/:id/comments
+server.post('/api/posts/:id/comments', (req, res) => {
+    const comment  = req.body;
+     comment.post_id = Number(req.params.id) 
+    if (!comment.text) {
+        res
+        .status(400)
+        .json({ errorMessage: "Please provide text for the comment." })
+    } else {
+        db.insertComment(comment)
+        .then(item => {
+            res
+            .status(201)
+            .json(item)
+        })
+        .catch(error => {
+            res
+            .status(500)
+            .json({errorMessage: 'There was an error while saving the comment to the database'})
+        })
+    }
+    
+})
 
-
-// GET    /api/posts 
+// GET    /api/posts
 server.get('/api/posts', (req, res) => {
     db.find()
     .then(item => {
@@ -48,7 +69,7 @@ server.get('/api/posts', (req, res) => {
 server.get('/api/posts/:id', (req, res) => {
     db.findById(req.params.id)
     .then(item => {
-        if(item) {
+        if(item[0]) {
             res.status(200).json(item)
         } else {
             res
@@ -61,12 +82,12 @@ server.get('/api/posts/:id', (req, res) => {
         .status(500)
         .json({ errorMessage: 'The post information could not be retrieved.' });
     })
-}) 
+})
 // GET    /api/posts/:id/comments
 server.get('/api/posts/:id/comments', (req, res) => {
     db.findPostComments(req.params.id)
     .then(item => {
-        if(item) {
+        if(item[0]) {
             res.status(200).json(item)
         } else {
             res
@@ -81,7 +102,7 @@ server.get('/api/posts/:id/comments', (req, res) => {
     })
 })
 
-// DELETE /api/posts/:id 
+// DELETE /api/posts/:id
 server.delete('/api/posts/:id', (req, res) => {
     db.remove(req.params.id)
     .then(item => {
@@ -100,7 +121,7 @@ server.delete('/api/posts/:id', (req, res) => {
         .status(500)
         .json({ errorMessage: 'The item could not be removed' })
     })
-})  
+})
 // PUT    /api/posts/:id
 server.put('/api/posts/:id', (req, res) => {
     const { title, contents } = req.body;
@@ -118,7 +139,7 @@ server.put('/api/posts/:id', (req, res) => {
                 .status(404)
                 .json({ message: 'The post with the specified ID does not exist.'});
             }
-            
+
         })
         .catch(error => {
             res
